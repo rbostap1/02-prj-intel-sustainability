@@ -95,6 +95,7 @@ body {
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
+  scroll-snap-type: x mandatory; /* Enable horizontal scroll snap */
 }
 
 /* Responsive: On small screens, stack timeline cards vertically and allow vertical scroll */
@@ -108,6 +109,7 @@ body {
     overflow-y: auto;           /* Enable vertical scroll */
     gap: 24px;                  /* Less gap for mobile */
     padding: 10px 0;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
   }
   .timeline-card {
     width: 90%;                 /* Make cards fit nicely on mobile */
@@ -210,6 +212,13 @@ body {
 }
 */
 
+/* Center the tips text at the bottom of the page */
+body > p {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1em;
+}
+
 /* Timeline card styles */
 .timeline-card {
   /* Use a simple box for each event */
@@ -225,6 +234,8 @@ body {
   flex: 0 0 250px; /* Prevent cards from shrinking or growing, fixed width */
   position: relative; /* Needed for overlay positioning */
   overflow: hidden;   /* Hide overlay outside the card */
+  scroll-snap-align: start; /* Snap each card to the start of the scroll area */
+  perspective: 800px; /* Needed for 3D flip effect */
 }
 
 /* Year style */
@@ -276,7 +287,7 @@ body {
   margin-left: 0;
   margin-right: 0;
   /* Semi-transparent dark background */
-  background: rgba(0, 113, 197, 0.95);
+  background: rgba(0, 113, 197); /* 50% opacity */
   color: #fff;
   display: flex;
   align-items: flex-start;      /* Align text to the top of the overlay */
@@ -285,19 +296,32 @@ body {
   padding: 16px;
   font-size: 1em;
   border-radius: 10px;
-  opacity: 0;           /* Hidden by default */
-  pointer-events: none; /* Prevent interaction when hidden */
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, transform 0.6s;
+  /* Start hidden and rotated */
+  opacity: 0;
+  pointer-events: none;
+  transform: rotateY(180deg);
   z-index: 2;
-  overflow-y: auto;     /* Add scroll if text is too long */
-  white-space: normal;  /* Allow normal wrapping */
-  word-break: break-word; /* Break long words if needed */
-  line-height: 1.4;     /* Improve readability */
-  box-sizing: border-box; /* Ensure padding is included in width/height */
+  overflow-y: auto;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  box-sizing: border-box;
+  /* Start slightly scaled down and moved down */
+  transform: translateY(20px) scale(0.98);
 }
 
 /* Show overlay on hover */
 .timeline-card:hover .event-desc {
   opacity: 1;
   pointer-events: auto;
+  /* Flip overlay to front */
+  transform: rotateY(0deg);
+}
+
+/* Flip the card itself when hovered to hide the front content */
+.timeline-card:hover > :not(.event-desc) {
+  /* Hide the front content when overlay is shown */
+  opacity: 0;
+  transition: opacity 0.3s;
 }
